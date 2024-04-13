@@ -1,4 +1,5 @@
 import numpy
+import matplotlib.pyplot
 import scipy.special
 
 class neuralNetwork:
@@ -7,7 +8,7 @@ class neuralNetwork:
         self.inodes = inputnodes
         self.hnodes = hiddennodes
         self.onodes = outputnodes
-        self.ly = learningrate
+        self.lr = learningrate
 
         # link weights
         self.wih = numpy.random.normal(0.0, pow(self.inodes, -0.5), (self.hnodes, self.inodes))
@@ -63,15 +64,70 @@ class neuralNetwork:
 
         return final_outputs
 
-input_nodes = 3
-hidden_nodes = 3
-output_nodes = 3
+input_nodes = 784
+hidden_nodes = 100
+output_nodes = 10
 learning_rate = 0.3
 
 n = neuralNetwork(input_nodes, hidden_nodes, output_nodes, learning_rate)
 
 # test
-final_outputs = n.query([1.0, 0.5, -1.5])
-print("final_outputs: ", final_outputs)
+#final_outputs = n.query([1.0, 0.5, -1.5])
+#print("final_outputs: ", final_outputs)
+
+# load the mnist training data CSV file into a list
+training_data_file = open("data/mnist_test_100.csv")
+training_data_list = training_data_file.readlines()
+training_data_file.close()
+
+all_values_test = training_data_list[0].split(',')
+image_array = numpy.asfarray(all_values_test[1:]).reshape((28,28))
+#matplotlib.pyplot.imshow(image_array, cmap='Greys',interpolation='None')
+#matplotlib.pyplot.show()
+
+scaled_input = (numpy.asfarray(all_values_test[1:]) / 255.0 * 0.99) + 0.01
+print(scaled_input)
+
+# output nodes
+onodes = 10
+targets = numpy.zeros(onodes) + 0.01
+targets[int(all_values_test[0])] = 0.99
+print("targets: ")
+print(targets)
+
+#
+# train the neural network
+# go through all records in the training data set
+for record in training_data_list:
+    # split the record by the commas
+    all_values = record.split(',')
+    # scale and shift the inputs
+    inputs = (numpy.asfarray(all_values[1:]) / 255.0 * 0.99) + 0.01
+    # create the target output values
+    targets = numpy.zeros(output_nodes) + 0.01
+    targets[int(all_values[0])] = 0.99
+    n.train(inputs, targets)
+
+# load the mnist test data CSV file into a list
+test_data_file = open("data/mnist_test_10.csv")
+test_data_list = test_data_file.readlines()
+test_data_file.close()
+
+# get the first test record
+all_values = test_data_list[1].split(',')
+# print the label
+print(all_values[0])
+image_array = numpy.asfarray(all_values[1:]).reshape((28,28))
+matplotlib.pyplot.imshow(image_array, cmap='Greys',interpolation='None')
+matplotlib.pyplot.show()
+
+query = n.query((numpy.asfarray(all_values[1:]) / 255.0 * 0.99) + 0.01)
+print("query: ")
+print(query)
+
+
+
+
+
 
 
