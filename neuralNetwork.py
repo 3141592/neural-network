@@ -75,8 +75,8 @@ n = neuralNetwork(input_nodes, hidden_nodes, output_nodes, learning_rate)
 #final_outputs = n.query([1.0, 0.5, -1.5])
 #print("final_outputs: ", final_outputs)
 
-# load the mnist training data CSV file into a list
-training_data_file = open("data/mnist_test_100.csv")
+print("# load the mnist training data CSV file into a list")
+training_data_file = open("../data/mnist/mnist_train.csv")
 training_data_list = training_data_file.readlines()
 training_data_file.close()
 
@@ -92,12 +92,14 @@ print(scaled_input)
 onodes = 10
 targets = numpy.zeros(onodes) + 0.01
 targets[int(all_values_test[0])] = 0.99
+print("")
 print("targets: ")
 print(targets)
 
 #
 # train the neural network
-# go through all records in the training data set
+print("")
+print("# go through all records in the training data set")
 for record in training_data_list:
     # split the record by the commas
     all_values = record.split(',')
@@ -108,26 +110,64 @@ for record in training_data_list:
     targets[int(all_values[0])] = 0.99
     n.train(inputs, targets)
 
-# load the mnist test data CSV file into a list
-test_data_file = open("data/mnist_test_10.csv")
+print("")
+print("# load the mnist test data CSV file into a list")
+test_data_file = open("../data/mnist/mnist_test.csv")
 test_data_list = test_data_file.readlines()
 test_data_file.close()
 
-# get the first test record
+print("")
+print("# get the first test record")
 all_values = test_data_list[1].split(',')
-# print the label
+print("")
+print("# print the label")
 print(all_values[0])
 image_array = numpy.asfarray(all_values[1:]).reshape((28,28))
 matplotlib.pyplot.imshow(image_array, cmap='Greys',interpolation='None')
 matplotlib.pyplot.show()
 
 query = n.query((numpy.asfarray(all_values[1:]) / 255.0 * 0.99) + 0.01)
+print("")
 print("query: ")
 print(query)
 
+#
+print("")
+print("# test the neural network")
+print("# scorecard for how well the network performs")
+scorecard = []
 
+print("")
+print("# go through all the records in the test data set")
+for record in test_data_list:
+    # split the record by the commas
+    all_values = record.split(',')
+    # correct answer is the first value
+    correct_label = int(all_values[0])
+    print (correct_label, " :correct label")
+    # scale and shift the inputs
+    inputs = (numpy.asfarray(all_values[1:]) / 255.0 * 0.99) + 0.01
+    # query the network
+    outputs = n.query(inputs)
+    # the index of the highest value corresponds to the label
+    label = numpy.argmax(outputs)
+    print(label, " :network's answer")
+    # append correct or incorrect to list
+    if (label == correct_label):
+        scorecard.append(1)
+    else:
+        scorecard.append(0)
+        pass
+    pass
 
+print("")
+print("# print scorecard")
+print(scorecard)
 
+print("")
+print("# calculate the performance score, the fraction of correct answers")
+scorecard_array = numpy.asarray(scorecard)
+print("performance = ", scorecard_array.sum() / scorecard_array.size)
 
 
 
