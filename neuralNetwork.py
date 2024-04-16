@@ -20,6 +20,10 @@ class neuralNetwork:
         pass
 
     def train(self, inputs_list, targets_list):
+        # Logging
+        # Epoch 20/20
+        # 30/30 ━━━━━━━━━━━━━━━━━━━━ 0s 11ms/step - accuracy: 0.9972 - loss: 0.0205 - val_accuracy: 0.8677 - val_loss: 0.5793
+
         # convert inputs list to 2D array
         inputs = numpy.array(inputs_list, ndmin=2).T
         targets = numpy.array(targets_list, ndmin=2).T
@@ -39,6 +43,7 @@ class neuralNetwork:
         # hidden layer error is the output error split by weights
         # recombined at hidden nodes
         hidden_errors = numpy.dot(self.who.T, output_errors)
+        print("    Error: ", hidden_errors.sum(), end='\r')
 
         # update the weights for the links between the hidden and output layers
         self.who += self.lr * numpy.dot((output_errors * final_outputs * (1.0 - final_outputs)), numpy.transpose(hidden_outputs))
@@ -100,12 +105,15 @@ print(targets)
 # train the neural network
 
 # epochs is the number of times the training data is used for training
-epochs = 2
+epochs = 5
 
 print("")
 print("# go through all records in the training data set")
 for e in range(epochs):
-    print("Starting epoch ", e)
+    # Logging
+    # Epoch 20/20
+    # 30/30 ━━━━━━━━━━━━━━━━━━━━ 0s 11ms/step - accuracy: 0.9972 - loss: 0.0205 - val_accuracy: 0.8677 - val_loss: 0.5793
+    print("Starting Epoch {}/{}.".format(e,epochs))
     for record in training_data_list:
         # split the record by the commas
         all_values = record.split(',')
@@ -115,6 +123,7 @@ for e in range(epochs):
         targets = numpy.zeros(output_nodes) + 0.01
         targets[int(all_values[0])] = 0.99
         n.train(inputs, targets)
+    print("")
     pass
 
 print("")
@@ -124,19 +133,19 @@ test_data_list = test_data_file.readlines()
 test_data_file.close()
 
 print("")
-print("# get the first test record")
-all_values = test_data_list[1].split(',')
-print("")
-print("# print the label")
-print(all_values[0])
+#print("# get the first test record")
+#all_values = test_data_list[1].split(',')
+#print("")
+#print("# print the label")
+#print(all_values[0])
 image_array = numpy.asfarray(all_values[1:]).reshape((28,28))
 matplotlib.pyplot.imshow(image_array, cmap='Greys',interpolation='None')
-matplotlib.pyplot.show()
+#matplotlib.pyplot.show()
 
 query = n.query((numpy.asfarray(all_values[1:]) / 255.0 * 0.99) + 0.01)
 print("")
-print("query: ")
-print(query)
+#print("query: ")
+#print(query)
 
 #
 print("")
@@ -151,14 +160,14 @@ for record in test_data_list:
     all_values = record.split(',')
     # correct answer is the first value
     correct_label = int(all_values[0])
-    print (correct_label, " :correct label")
+    #print (correct_label, " :correct label")
     # scale and shift the inputs
     inputs = (numpy.asfarray(all_values[1:]) / 255.0 * 0.99) + 0.01
     # query the network
     outputs = n.query(inputs)
     # the index of the highest value corresponds to the label
     label = numpy.argmax(outputs)
-    print(label, " :network's answer")
+    #print(label, " :network's answer")
     # append correct or incorrect to list
     if (label == correct_label):
         scorecard.append(1)
@@ -169,7 +178,7 @@ for record in test_data_list:
 
 print("")
 print("# print scorecard")
-print(scorecard)
+#print(scorecard)
 
 print("")
 print("# calculate the performance score, the fraction of correct answers")
