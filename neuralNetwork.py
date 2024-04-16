@@ -98,17 +98,24 @@ print(targets)
 
 #
 # train the neural network
+
+# epochs is the number of times the training data is used for training
+epochs = 2
+
 print("")
 print("# go through all records in the training data set")
-for record in training_data_list:
-    # split the record by the commas
-    all_values = record.split(',')
-    # scale and shift the inputs
-    inputs = (numpy.asfarray(all_values[1:]) / 255.0 * 0.99) + 0.01
-    # create the target output values
-    targets = numpy.zeros(output_nodes) + 0.01
-    targets[int(all_values[0])] = 0.99
-    n.train(inputs, targets)
+for e in range(epochs):
+    print("Starting epoch ", e)
+    for record in training_data_list:
+        # split the record by the commas
+        all_values = record.split(',')
+        # scale and shift the inputs
+        inputs = (numpy.asfarray(all_values[1:]) / 255.0 * 0.99) + 0.01
+        # create the target output values
+        targets = numpy.zeros(output_nodes) + 0.01
+        targets[int(all_values[0])] = 0.99
+        n.train(inputs, targets)
+    pass
 
 print("")
 print("# load the mnist test data CSV file into a list")
