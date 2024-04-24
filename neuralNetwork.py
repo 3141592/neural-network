@@ -1,6 +1,8 @@
 import numpy
 import matplotlib.pyplot
 import scipy.special
+import imageio.v3
+import glob
 
 class neuralNetwork:
     # init neural network
@@ -19,7 +21,7 @@ class neuralNetwork:
 
         pass
 
-    def train(self, inputs_list, targets_list, record, cummulative_error):
+    def train(self, inputs_list, targets_list, record, cummulative_average):
         # Logging
         # Epoch 20/20
         # 30/30 ━━━━━━━━━━━━━━━━━━━━ 0s 11ms/step - accuracy: 0.9972 - loss: 0.0205 - val_accuracy: 0.8677 - val_loss: 0.5793
@@ -43,15 +45,15 @@ class neuralNetwork:
         # hidden layer error is the output error split by weights
         # recombined at hidden nodes
         hidden_errors = numpy.dot(self.who.T, output_errors)
-        cummulative_error = hidden_errors.sum()
+        cummulative_average = (cummulative_average + hidden_errors.mean()) / 2.0
         #print("    Record:    Error: ", hidden_errors.sum(), end='\r')
-        print("    Record: {} Error: {}".format(record, cummulative_error), end='\r')
+        print("    Record: {} Error: {}".format(record, cummulative_average), end='\r')
 
         # update the weights for the links between the hidden and output layers
         self.who += self.lr * numpy.dot((output_errors * final_outputs * (1.0 - final_outputs)), numpy.transpose(hidden_outputs))
         self.wih += self.lr * numpy.dot((hidden_errors * hidden_outputs * (1.0 - hidden_outputs)), numpy.transpose(inputs))
 
-        return cummulative_error
+        return cummulative_average
 
     def query(self, inputs_list):
         # convert inputs_list to 2D array
@@ -108,7 +110,7 @@ for e in range(epochs):
     # 30/30 ━━━━━━━━━━━━━━━━━━━━ 0s 11ms/step - accuracy: 0.9972 - loss: 0.0205 - val_accuracy: 0.8677 - val_loss: 0.5793
     print("Starting Epoch {}/{}.".format(e + 1,epochs))
     count = 0
-    cummulative_error = 0
+    cummulative_average = 0
     for record in training_data_list:
         count = count + 1
         # split the record by the commas
@@ -118,7 +120,7 @@ for e in range(epochs):
         # create the target output values
         targets = numpy.zeros(output_nodes) + 0.01
         targets[int(all_values[0])] = 0.99
-        cummulative_error = cummulative_error + n.train(inputs, targets, count, cummulative_error)
+        cummulative_average = (cummulative_average + n.train(inputs, targets, count, cummulative_average)) / count
     print("")
     pass
 
@@ -165,6 +167,69 @@ scorecard_array = numpy.asarray(scorecard)
 print("hidden_nodes: ", hidden_nodes)
 print("learning_rate: ", learning_rate)
 print("performance = ", scorecard_array.sum() / scorecard_array.size)
+
+print("")
+print("Test with miscellaneous created images")
+
+# our own image test data set
+our_own_dataset = []
+
+# load the png image data as test data set
+for image_file_name in glob.glob('data/one-1.png'):
+
+    # use the filename to set the correct label
+    label = 1
+
+    # load image data from png files into an array
+    print ("loading ... ", image_file_name)
+    img_array = imageio.v3.imread(image_file_name, mode='F')
+
+    # reshape from 28x28 to list of 784 values, invert values
+    img_data  = 255.0 - img_array.reshape(784)
+
+    # then scale data to range from 0.01 to 1.0
+    img_data = (img_data / 255.0 * 0.99) + 0.01
+    print(numpy.min(img_data))
+    print(numpy.max(img_data))
+
+    # append label and image data  to test data set
+    record = numpy.append(label,img_data)
+    our_own_dataset.append(record)
+
+    pass
+
+# test the neural network with our own images
+# record to test
+item = 0
+
+# plot image
+matplotlib.pyplot.imshow(our_own_dataset[item][1:].reshape(28,28), cmap='Greys', interpolation='None')
+
+# correct answer is first value
+correct_label = our_own_dataset[item][0]
+# data is remaining values
+inputs = our_own_dataset[item][1:]
+
+# query the network
+outputs = n.query(inputs)
+print (outputs)
+
+# the index of the highest value corresponds to the label
+label = numpy.argmax(outputs)
+print("network says ", label)
+# append correct or incorrect to list
+if (label == correct_label):
+    print ("match!")
+else:
+    print ("no match!")
+    pass
+
+print("hidden_nodes: ", hidden_nodes)
+print("learning_rate: ", learning_rate)
+
+
+
+
 
 
 
