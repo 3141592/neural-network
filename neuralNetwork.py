@@ -175,7 +175,7 @@ print("Test with miscellaneous created images")
 our_own_dataset = []
 
 # load the png image data as test data set
-for image_file_name in glob.glob('data/one-1.png'):
+for image_file_name in glob.glob('data/five-1.png'):
 
     # use the filename to set the correct label
     label = 1
