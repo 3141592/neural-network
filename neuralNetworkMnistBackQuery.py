@@ -109,7 +109,7 @@ class neuralNetwork:
 input_nodes = 784
 hidden_nodes = 200
 output_nodes = 10
-learning_rate = 0.1
+learning_rate = 0.175
 
 n = neuralNetwork(input_nodes, hidden_nodes, output_nodes, learning_rate)
 
@@ -133,7 +133,7 @@ targets[int(all_values_test[0])] = 0.99
 # train the neural network
 
 # epochs is the number of times the training data is used for training
-epochs = 2
+epochs = 10
 
 print("")
 print("# go through all records in the training data set")
@@ -195,21 +195,31 @@ for record in test_data_list:
 print("")
 
 # run the network backwards, given a label, see what image it produces
+def perform_back_query(label):
+    # create the output signals for this label
+    targets = numpy.zeros(output_nodes) + 0.01
+    # all_values[0] is the target label for this record
+    targets[label] = 0.99
+    print(targets)
+
+    # get image data
+    image_data = n.backquery(targets)
+
+    # plot image data
+    matplotlib.pyplot.imshow(image_data.reshape(28,28), cmap='Greys', interpolation='None')
+    matplotlib.pyplot.show()
 
 # label to test
-label = 5
-# create the output signals for this label
-targets = numpy.zeros(output_nodes) + 0.01
-# all_values[0] is the target label for this record
-targets[label] = 0.99
-print(targets)
-
-# get image data
-image_data = n.backquery(targets)
-
-# plot image data
-matplotlib.pyplot.imshow(image_data.reshape(28,28), cmap='Greys', interpolation='None')
-matplotlib.pyplot.show()
-
+# label = 5
+perform_back_query(0)
+perform_back_query(1)
+perform_back_query(2)
+perform_back_query(3)
+perform_back_query(4)
+perform_back_query(5)
+perform_back_query(6)
+perform_back_query(7)
+perform_back_query(8)
+perform_back_query(9)
 
 
