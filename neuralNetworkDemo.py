@@ -77,8 +77,8 @@ learning_rate = 0.2
 n = neuralNetwork(input_nodes, hidden_nodes, output_nodes, learning_rate)
 
 # test
-final_outputs = n.query([1.0, 0.5, -1.5])
-print("final_outputs: ", final_outputs)
+#final_outputs = n.query([1.0, 0.5, -1.5])
+#print("final_outputs: ", final_outputs)
 
 print("# load the mnist training data CSV file into a list")
 training_data_file = open("../data/mnist/mnist_train.csv")

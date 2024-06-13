@@ -100,7 +100,7 @@ targets[int(all_values_test[0])] = 0.99
 # train the neural network
 
 # epochs is the number of times the training data is used for training
-epochs = 5
+epochs = 25
 
 print("")
 print("# go through all records in the training data set")
